@@ -1,0 +1,24 @@
+{
+    "model_name": "basic_linear_regression_pipeline",
+    "target": "price",
+    "features_used": [
+        "suburb",
+        "property_type",
+        "bedrooms",
+        "bathrooms",
+        "parking_spaces",
+        "land_size_m2",
+        "building_size_m2",
+        "house_age_years",
+        "distance_to_cbd_km",
+        "nearest_school_km",
+        "nearest_station_km",
+        "condition"
+    ],
+    "model_type": "LinearRegression",
+    "metrics": {
+        "MAE": 48160.53,
+        "RMSE": 57642.73,
+        "R2": 0.946
+    }
+}
