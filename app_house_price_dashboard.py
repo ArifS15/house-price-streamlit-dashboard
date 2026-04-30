@@ -10,11 +10,10 @@ import streamlit as st
 # CONFIGURATION
 # ============================================
 
-PROJECT_FOLDER = r"D:\Work\PLN Pusat - 2\Data Analytic Learning Path\Pipeline Training"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODEL_PATH = os.path.join(PROJECT_FOLDER, "models", "house_price_basic_pipeline.joblib")
-METADATA_PATH = os.path.join(PROJECT_FOLDER, "models", "house_price_basic_pipeline_metadata.json")
-
+MODEL_PATH = os.path.join(BASE_DIR, "models", "house_price_basic_pipeline.joblib")
+METADATA_PATH = os.path.join(BASE_DIR, "models", "house_price_basic_pipeline_metadata.json")
 
 # ============================================
 # LOAD MODEL AND METADATA
