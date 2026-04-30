@@ -5,6 +5,9 @@ import joblib
 import pandas as pd
 import streamlit as st
 
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 
 # ============================================
 # CONFIGURATION
@@ -15,6 +18,37 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "house_price_basic_pipeline.joblib")
 METADATA_PATH = os.path.join(BASE_DIR, "models", "house_price_basic_pipeline_metadata.json")
 
+
+def patch_simple_imputer_fill_dtype(obj):
+    """
+    Compatibility patch for old saved sklearn SimpleImputer objects.
+
+    Sometimes a model saved with one sklearn version may fail
+    in another sklearn version because SimpleImputer expects
+    an internal attribute called _fill_dtype.
+    """
+    
+    if isinstance(obj, SimpleImputer):
+        if not hasattr(obj, "_fill_dtype"):
+            statistics = getattr(obj, "statistics_", None)
+            
+            if statistics is not None and hasattr(statistics, "dtype"):
+                obj._fill_dtype = statistics.dtype
+            else:
+                obj._fill_dtype = object
+
+    elif isinstance(obj, Pipeline):
+        for _, step in obj.steps:
+            patch_simple_imputer_fill_dtype(step)
+
+    elif isinstance(obj, ColumnTransformer):
+        for _, transformer, _ in obj.transformers_:
+            if transformer not in ["drop", "passthrough"]:
+                patch_simple_imputer_fill_dtype(transformer)
+
+    return obj
+
+
 # ============================================
 # LOAD MODEL AND METADATA
 # ============================================
@@ -22,6 +56,7 @@ METADATA_PATH = os.path.join(BASE_DIR, "models", "house_price_basic_pipeline_met
 @st.cache_resource
 def load_model():
     model = joblib.load(MODEL_PATH)
+    model = patch_simple_imputer_fill_dtype(model)
     return model
 
 
